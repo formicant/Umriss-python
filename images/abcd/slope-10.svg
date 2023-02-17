@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      showgrid="true"
-     inkscape:zoom="2.6984266"
-     inkscape:cx="185.47846"
-     inkscape:cy="73.931972"
+     inkscape:zoom="1.3492133"
+     inkscape:cx="179.36378"
+     inkscape:cy="-17.417557"
      inkscape:window-width="1876"
      inkscape:window-height="1052"
      inkscape:window-x="44"
@@ -63,46 +63,4 @@
        style="font-size:1.83333px;stroke-width:0.0125"
        x="19.5"
        y="19">horizontal</tspan></text>
-  <circle
-     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-     id="circle1383"
-     cx="28"
-     cy="16.5"
-     r="0.375" />
-  <circle
-     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-     id="circle1385"
-     cx="34"
-     cy="15.5"
-     r="0.375" />
-  <circle
-     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-     id="circle1387"
-     cx="11"
-     cy="16.5"
-     r="0.375" />
-  <circle
-     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-     id="circle1389"
-     cx="5"
-     cy="15.5"
-     r="0.375" />
-  <circle
-     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-     id="circle1875"
-     cx="2"
-     cy="14.5"
-     r="0.375" />
-  <circle
-     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-     id="circle1089"
-     cx="16"
-     cy="17"
-     r="0.375" />
-  <circle
-     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-     id="circle1091"
-     cx="23"
-     cy="17"
-     r="0.375" />
 </svg>
