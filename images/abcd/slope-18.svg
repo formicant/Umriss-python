@@ -1,6 +1,104 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="288" height="144" viewBox="0 0 36 18" xmlns="http://www.w3.org/2000/svg">
- <g>
-  <path d="m0.25,0l-0.25,7l0.25,6.75l0.75,0.25l1,0.5l3,1l6,1l8.5,0.5l8.5,-0.5l6,-1l1,-0.5l0.75,-0.25l0.25,-6.25l-0.25,-6.5l-0.75,0.5l-1,1l-2,1l-6,2l-6,0.5l-6,-0.5l-5,-1l-3,-1l-2,-1l-3,-3z" />
- </g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="288"
+   height="156"
+   viewBox="0 0 36 19.5"
+   version="1.1"
+   id="svg511"
+   sodipodi:docname="slope-18.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs515" />
+  <sodipodi:namedview
+     id="namedview513"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="2.2690972"
+     inkscape:cx="184.87528"
+     inkscape:cy="143.88982"
+     inkscape:window-width="1876"
+     inkscape:window-height="1052"
+     inkscape:window-x="44"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg511">
+    <inkscape:grid
+       type="xygrid"
+       id="grid634"
+       empspacing="4"
+       originx="0"
+       originy="0"
+       spacingx="0.125"
+       spacingy="0.125" />
+  </sodipodi:namedview>
+  <g
+     id="g509">
+    <path
+       d="M 0.25,0 0,7 0.25,13.75 1,14 l 1,0.5 3,1 6,1 8.5,0.5 8.5,-0.5 6,-1 L 35,15 35.75,14.75 36,8.5 35.75,2 35,2.5 l -1,1 -2,1 -6,2 L 20,7 14,6.5 9,5.5 6,4.5 4,3.5 1,0.5 Z"
+       id="path507" />
+  </g>
+  <rect
+     style="fill:#0000ff;stroke-width:0.0125;stroke-linecap:round;stroke-linejoin:round"
+     id="rect293"
+     width="8.999999"
+     height="0.125"
+     x="15.000001"
+     y="17.375" />
+  <text
+     xml:space="preserve"
+     style="font-size:1.83333px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;text-anchor:middle;fill:#0000ff;stroke-width:0.0125;stroke-linecap:round;stroke-linejoin:round"
+     x="19.5"
+     y="19"
+     id="text401"><tspan
+       sodipodi:role="line"
+       id="tspan399"
+       style="font-size:1.83333px;stroke-width:0.0125"
+       x="19.5"
+       y="19">angle</tspan></text>
+  <circle
+     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     id="path803"
+     cx="19.5"
+     cy="17"
+     r="0.375" />
+  <circle
+     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     id="circle1383"
+     cx="28"
+     cy="16.5"
+     r="0.375" />
+  <circle
+     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     id="circle1385"
+     cx="34"
+     cy="15.499999"
+     r="0.37499905" />
+  <circle
+     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     id="circle1387"
+     cx="11"
+     cy="16.5"
+     r="0.375" />
+  <circle
+     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     id="circle1389"
+     cx="5"
+     cy="15.499999"
+     r="0.37499905" />
+  <circle
+     style="fill:#0000ff;stroke:#ffffff;stroke-width:0.1875;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     id="circle1875"
+     cx="1.9999999"
+     cy="14.5"
+     r="0.375" />
 </svg>
