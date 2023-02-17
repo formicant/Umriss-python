@@ -1,3 +1,4 @@
+from typing import Literal
 import numpy as np
 
 from umriss.types import Point, QuadraticNode, CubicNode
@@ -96,7 +97,9 @@ class Path:
         self.last_cubic_ctrl = _zero
     
     
-    def _add_node(self, node_type: str, *values: float) -> None:
+    NodeType = Literal['m', 'h', 'v', 'l', 't', 'q', 's', 'c', 'z']
+    
+    def _add_node(self, node_type: NodeType, *values: float) -> None:
         formated = (self._format_value(v) for v in values)
         self.nodes.append(node_type + ','.join(formated))
     
