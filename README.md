@@ -6,7 +6,7 @@ Traces black-and-white bitmaps into SVG.
 
 
 While _Umriss_ can be used for tracing graphics, its main orientation is scanned documents and books.
-It generates compact SVG files which, after compressing into SVGZ, are comparable in size with the traditional bitmap formats or even smaller.
+It generates compact SVG files which, after compressing into SVGZ, are comparable in size to the traditional bitmap formats or even smaller.
 Some planned features, such as glyph reusing **(TODO)**, can reduce the size even further.
 
 _Umriss_ uses several tracing methods, both lossless and lossy.
@@ -31,7 +31,7 @@ The code is not optimized yet. Execution can take quite a few seconds on a singl
 
 Creates an exact contour around the black pixels of the image.
 
-The file sizes can even be smaller than those of lossily approximating methods due to using `h` and `v` SVG node types with integer coordinates.
+The file sizes can even be smaller than those of lossily approximating methods due to using `h` and `v` SVG node types with integer relative coordinates.
 
 ![exact](images/abcd/abcd-exact.svg)
 
@@ -108,7 +108,7 @@ _Parameters:_
   
   An approximation used before the cubic approximation.
   
-  | `AccuratePolygon` | `DouglasPeuckerPolygon(1)` |
+  | `polygonal_approximation = AccuratePolygon` | `polygonal_approximation = DouglasPeuckerPolygon(1)` |
   |:-----------------:|:-----------------------:|
   | ![silly-accurate](images/abcd/abcd-silly-accurate.svg) | ![silly-dp](images/abcd/abcd-silly-dp.svg) |
 
