@@ -50,7 +50,7 @@ Preserves the symmetries of the original image.
 _Parameters:_
 - `max_slope_ratio` (positive integer, default value: `10`)
   
-  Defines maximum slope ratio. E.g. if the value is 10, then 10 px by 1 px stepped line will be considered a slope while 11 or more by 1 will be considered horizontal/vertical. Higher values give smoother contours, but if the value is too high, there won't be any horizontal or vertical line in the image.
+  Defines maximum slope ratio. E.g. if the value is 10, then 10 px by 1 px stepped line will be considered a slope while 11 or more by 1 will contain horizontal/vertical segments. Higher values give smoother contours, but if the value is too high, there won't be any horizontal or vertical line in the image.
   
   | original | `max_slope_ratio = 2` |
   |:--------:|:---------------------:|
