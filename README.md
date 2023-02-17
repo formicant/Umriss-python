@@ -52,9 +52,11 @@ _Parameters:_
   
   Defines maximum slope ratio. E.g. if the value is 10, then 10 px by 1 px stepped line will be considered a slope while 11 or more by 1 will be considered horizontal/vertical. Higher values give smoother contours, but if the value is too high, there won't be any horizontal or vertical line in the image.
   
-  | original | `max_slope_ratio = 2` | `max_slope_ratio = 10` | `max_slope_ratio = 18` |
-  |:--------:|:---------------------:|:----------------------:|:----------------------:|
-  | ![slope-exact](images/abcd/slope-exact.svg) | ![slope-2](images/abcd/slope-2.svg) | ![slope-10](images/abcd/slope-10.svg) | ![slope-18](images/abcd/slope-18.svg) |
+  | original | `max_slope_ratio = 2` |
+  |:--------:|:---------------------:|
+  | ![slope-exact](images/abcd/slope-exact.svg) | ![slope-2](images/abcd/slope-2.svg) |
+  | **`max_slope_ratio = 10`** | **`max_slope_ratio = 18`** |
+  | ![slope-10](images/abcd/slope-10.svg) | ![slope-18](images/abcd/slope-18.svg) |
 
 - `corner_offset` (range: `0.0..0.25`, default value: `0.25`)
 
@@ -117,9 +119,9 @@ Here are some examples of traced sccanned pages and their sizes.
 
 | File type | Page 1 | Page 2 | Page 3 |
 |:----------|-------:|-------:|-------:|
-| png (1 bit per pixel) | [png](images/page1/page1-bw.png) 339 kB | [png](images/page2/page2-bw.png) 365 kB | [png](images/page3/page3-bw.png) 567 kB |
-| tiff (CCITT Group 4) | [tif](images/page1/page1-ccitt4.tif) 160 kB | [tif](images/page2/page2-ccitt4.tif) 156 kB | [tif](images/page3/page3-ccitt4.tif) 206 kB |
-| svg Exact | [svg](images/page1/page1-exact.svg) 1088 kB │ [svgz](images/page1/page1-exact.svgz) 171 kB | [svg](images/page2/page2-exact.svg) 1162 kB │ [svgz](images/page2/page2-exact.svgz) 180 kB |[svg](images/page3/page3-exact.svg) 1377 kB │ [svgz](images/page3/page3-exact.svgz) 197 kB |
-| svg AccuratePolygon | [svg](images/page1/page1-accurate.svg) 1289 kB │ [svgz](images/page1/page1-accurate.svgz) 243 kB | [svg](images/page2/page2-accurate.svg) 1370 kB │ [svgz](images/page2/page2-accurate.svgz) 258 kB |[svg](images/page3/page3-accurate.svg) 1302 kB │ [svgz](images/page3/page3-accurate.svgz) 259 kB |
-| svg DouglasPeucker(1) | [svg](images/page1/page1-dp-1.svg) 551 kB │ [svgz](images/page1/page1-dp-1.svgz) 173 kB | [svg](images/page2/page2-dp-1.svg) 603 kB │ [svgz](images/page2/page2-dp-1.svgz) 188 kB |[svg](images/page3/page3-dp-1.svg) 445 kB │ [svgz](images/page3/page3-dp-1.svgz) 156 kB |
+| png (1 bit per pixel) | [339 kB](images/page1/page1-bw.png) | [365 kB](images/page2/page2-bw.png) | [567 kB](images/page3/page3-bw.png) |
+| tiff (CCITT Group 4) | [160 kB](images/page1/page1-ccitt4.tif) | [156 kB](images/page2/page2-ccitt4.tif) | [206 kB](images/page3/page3-ccitt4.tif) |
+| svg/svgz Exact | [1088](images/page1/page1-exact.svg) / [171 kB](images/page1/page1-exact.svgz)| [1162](images/page2/page2-exact.svg) / [180 kB](images/page2/page2-exact.svgz) | [1377](images/page3/page3-exact.svg) / [197 kB](images/page3/page3-exact.svgz) |
+| svg/svgz AccuratePolygon | [1289](images/page1/page1-accurate.svg) / [243 kB](images/page1/page1-accurate.svgz) | [1370](images/page2/page2-accurate.svg) / [258 kB](images/page2/page2-accurate.svgz) | [1302](images/page3/page3-accurate.svg) / [259 kB](images/page3/page3-accurate.svgz) |
+| svg/svgz DouglasPeucker(1) | [551](images/page1/page1-dp-1.svg) / [173 kB](images/page1/page1-dp-1.svgz) | [603](images/page2/page2-dp-1.svg) / [188 kB](images/page2/page2-dp-1.svgz) |[445](images/page3/page3-dp-1.svg) / [156 kB](images/page3/page3-dp-1.svgz) |
 
