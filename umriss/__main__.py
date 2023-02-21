@@ -1,16 +1,16 @@
 from timeit import default_timer
 
 from . import trace
-from .tracing import BinarizedExact, BinarizedPolygon
+from .tracing import BinarizedExact, BinarizedPolygon, GrayscalePolygon
 from .approximation import Exact, DouglasPeuckerPolygon, SillyCubic
 
 
 if __name__ == '__main__':
     # TODO: add CLI
     
-    input_bitmap_file = 'images/abcd/abcd.png'
+    input_bitmap_file = 'tmp/gray150.png'
     output_svg_file = 'tmp/out.svg'
-    tracing = BinarizedPolygon()
+    tracing = GrayscalePolygon(200)
     approximation = Exact()
     scale = 1.0
     debug_mode = False
