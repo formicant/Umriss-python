@@ -2,10 +2,10 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from .types import IntContour, Contour, QuadraticContour, CubicContour
+from .contour import Contour, LineContour, CubicContour
 
 
-TContour = TypeVar('TContour')
+TContour = TypeVar('TContour', bound=Contour)
 
 @dataclass
 class Glyph(Generic[TContour]):
@@ -15,6 +15,10 @@ class Glyph(Generic[TContour]):
     the others being inner contours (holes).
     """
     contours: list[TContour]
+    
+    @property
+    def outer_contour(self) -> TContour:
+        return self.contours[0]
 
 
 @dataclass
@@ -22,26 +26,14 @@ class Drawing(ABC, Generic[TContour]):
     """
     Represents a vector image consisting of `Glyph`s.
     """
+    width: float
+    height: float
     glyphs: list[Glyph[TContour]]
 
 
-class ExactDrawing(Drawing[IntContour]):
-    """
-    Exact vector representation of image pixels.
-    """
-    pass
-
-
-class LineDrawing(Drawing[Contour]):
+class LineDrawing(Drawing[LineContour]):
     """
     Vector image consisting of polygons.
-    """
-    pass
-
-
-class QuadraticDrawing(Drawing[QuadraticContour]):
-    """
-    Vector image consisting of quadratic Bézier splines.
     """
     pass
 

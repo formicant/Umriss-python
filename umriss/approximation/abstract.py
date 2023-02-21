@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-from umriss.types import IntContour
-from umriss.drawing import Drawing, ExactDrawing, Glyph
+from umriss.contour import Contour, LineContour
+from umriss.drawing import Drawing, LineDrawing, Glyph
 
 
-TContour = TypeVar('TContour')
+TContour = TypeVar('TContour', bound=Contour)
 
 class Approximation(ABC, Generic[TContour]):
     """
@@ -20,14 +20,18 @@ class Approximation(ABC, Generic[TContour]):
         pass
     
     
-    def approximate_drawing(self, exact_drawing: ExactDrawing) -> Drawing[TContour]:
-        drawing: Drawing[TContour] = self.DrawingType([
+    def approximate_drawing(self, drawing: LineDrawing) -> Drawing[TContour]:
+        approximated_glyphs = [
             Glyph[TContour]([self.approximate_contour(c) for c in glyph.contours])
-            for glyph in exact_drawing.glyphs
-        ])
-        return drawing
+            for glyph in drawing.glyphs
+        ]
+        approximated_drawing: Drawing[TContour] = self.DrawingType(
+            drawing.width, drawing.height,
+            approximated_glyphs
+        )
+        return approximated_drawing
     
     
     @abstractmethod
-    def approximate_contour(self, exact_contour: IntContour) -> TContour:
+    def approximate_contour(self, exact_contour: LineContour) -> TContour:
         pass

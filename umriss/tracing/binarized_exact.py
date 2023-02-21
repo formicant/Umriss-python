@@ -1,11 +1,40 @@
+from typing import Iterator
 from nptyping import NDArray, Shape, Int
 import numpy as np
+import cv2 as cv
 
-from umriss.types import IntPoint, IntContour
-from umriss.numpy_tools import roll_prev, roll_next
+from umriss.types import IntPoint, IntVectors
+from umriss.bitmap import GrayPixels
+from umriss.contour import LineContour
+from umriss.drawing import Glyph
+from umriss.utils import roll_prev, roll_next
+from .abstract import Tracing
 
 
-def get_exact_contour(cv_contour: NDArray[Shape['*, 1, [x, y]'], Int]) -> IntContour:
+class BinarizedExact(Tracing):
+    """
+    Binarizes the bitmap using a simple threshold method
+    and draws an exact contour around the black pixels of the image.
+    """
+    def get_glyphs(self, pixels: GrayPixels) -> Iterator[Glyph[LineContour]]:
+        _, inv_pixels = cv.threshold(pixels, 128, 255, cv.THRESH_BINARY_INV)
+        cv_contours, [hierarchy] = cv.findContours(inv_pixels, cv.RETR_CCOMP, cv.CHAIN_APPROX_NONE)
+        
+        index = 0
+        while index >= 0:
+            outer_contour = _get_exact_contour(cv_contours[index])
+            glyph_contours = [outer_contour]
+            index, _, child, _ = hierarchy[index]
+            
+            while child >= 0:
+                inner_contour = _get_exact_contour(cv_contours[child])
+                glyph_contours.append(inner_contour)
+                child, _, _, _ = hierarchy[child]
+            
+            yield Glyph[LineContour](glyph_contours)
+
+
+def _get_exact_contour(cv_contour: NDArray[Shape['*, 1, [x, y]'], Int]) -> LineContour:
     """
     An OpenCV's contour is an array of the coordinates of the area's outer pixels.
     This function converts it into the edge line around the area's pixels.
@@ -24,16 +53,14 @@ def get_exact_contour(cv_contour: NDArray[Shape['*, 1, [x, y]'], Int]) -> IntCon
     exact_contour, start_offset = _simplify_relative(exact_contour)
     
     start_offset += (_directions[indices_from[0]] @ _offset_transform + 0.5).astype(np.int32)
-    absolute: IntContour = contour[0] + start_offset + exact_contour.cumsum(axis=0)
+    absolute = contour[0] + start_offset + exact_contour.cumsum(axis=0)
     
-    return absolute
+    return LineContour(absolute)
 
 
-def _simplify_relative(relative_contour: IntContour) -> tuple[IntContour, IntPoint]:
+def _simplify_relative(relative_contour: IntVectors) -> tuple[IntVectors, IntPoint]:
     """
     Combines consecutive contour segments of the same direction.
-    A specialized version. Works a bit faster than
-    `umriss.approximation.contour_tools.simplify_contour`.
     """
     difference = relative_contour - roll_prev(relative_contour)
     
@@ -49,7 +76,7 @@ def _simplify_relative(relative_contour: IntContour) -> tuple[IntContour, IntPoi
 
 _IndexArray = NDArray[Shape['*'], Int]
 
-def _get_indices(directions: IntContour, to: bool) -> _IndexArray:
+def _get_indices(directions: IntVectors, to: bool) -> _IndexArray:
     index_by_direction = _index_by_to_direction if to else _index_by_from_direction
     indices: _IndexArray = index_by_direction[tuple(directions.T + 1)]
     return indices
@@ -83,4 +110,3 @@ _offset_transform = np.array([
     [-0.5,  0.5],
     [-0.5, -0.5],
 ])
-

@@ -1,8 +1,9 @@
 import numpy as np
 
-from umriss.types import IntContour, Contour, CubicContour
+from umriss.contour import LineContour, CubicContour
 from umriss.drawing import CubicDrawing
-from umriss.numpy_tools import roll_prev, roll_next, normalize
+from umriss.utils import roll_prev, roll_next, normalize
+from umriss.types import CubicNodes, Points
 from .abstract import Approximation
 
 
@@ -16,12 +17,8 @@ class SillyCubic(Approximation[CubicContour]):
     DrawingType = CubicDrawing
     
     
-    def __init__(self, polygonal_approximation: Approximation[Contour]):
-        self.polygonal_approximation = polygonal_approximation
-    
-    
-    def approximate_contour(self, exact_contour: IntContour) -> CubicContour:
-        polygon = self.polygonal_approximation.approximate_contour(exact_contour)
+    def approximate_contour(self, contour: LineContour) -> CubicContour:
+        polygon = contour.points
         
         # the number of points should be even
         if len(polygon) % 2 != 0:
@@ -45,13 +42,12 @@ class SillyCubic(Approximation[CubicContour]):
         ctrl_start = p_start + dir_start * len_start[:, np.newaxis]
         ctrl_end = p_end + dir_end * len_end[:, np.newaxis]
         
-        nodes: CubicContour = np.stack((ctrl_start, ctrl_end, p_end), axis=1)
-        return nodes
+        nodes: CubicNodes = np.stack((ctrl_start, ctrl_end, p_end), axis=1)
+        return CubicContour(nodes)
     
     
-def _insert_additional_point(polygon: Contour) -> Contour:
+def _insert_additional_point(polygon: Points) -> Points:
     prev_points = roll_prev(polygon)
     longest_segment_index = np.argmax(np.linalg.norm(polygon - prev_points, axis=1))
     new_point = (polygon[longest_segment_index] + prev_points[longest_segment_index]) / 2
     return np.insert(polygon, [longest_segment_index], [new_point], axis=0)
-

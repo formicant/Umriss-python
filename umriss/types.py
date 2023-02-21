@@ -1,16 +1,20 @@
-from abc import ABC, abstractproperty
-from dataclasses import dataclass
 from nptyping import NDArray, Shape, Int, Number
 
 
-IntPoint         = NDArray[Shape['[x, y]'], Int]
-Point            = NDArray[Shape['[x, y]'], Number]
+IntPoint = NDArray[Shape['[x, y]'], Int]
+IntPoints = NDArray[Shape['*, [x, y]'], Int]
 
-QuadraticNode    = NDArray[Shape['[ctrl, point], [x, y]'], Number]
-CubicNode        = NDArray[Shape['[ctrl1, ctrl2, point], [x, y]'], Number]
+IntVector = NDArray[Shape['[x, y]'], Int]
+IntVectors = NDArray[Shape['*, [x, y]'], Int]
 
-IntContour       = NDArray[Shape['*, [x, y]'], Int]
-Contour          = NDArray[Shape['*, [x, y]'], Number]
+Point = NDArray[Shape['[x, y]'], Number]
+Points = NDArray[Shape['*, [x, y]'], Number]
 
-QuadraticContour = NDArray[Shape['*, [ctrl, point], [x, y]'], Number]
-CubicContour     = NDArray[Shape['*, [ctrl1, ctrl2, point], [x, y]'], Number]
+Vector = NDArray[Shape['[x, y]'], Number]
+Vectors = NDArray[Shape['*, [x, y]'], Number]
+
+QuadraticNode = NDArray[Shape['[ctrl1, ctrl2, point], [x, y]'], Number]
+QuadraticNodes = NDArray[Shape['*, [ctrl1, ctrl2, point], [x, y]'], Number]
+
+CubicNode = NDArray[Shape['[ctrl1, ctrl2, point], [x, y]'], Number]
+CubicNodes = NDArray[Shape['*, [ctrl1, ctrl2, point], [x, y]'], Number]

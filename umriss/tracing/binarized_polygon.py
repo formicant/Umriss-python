@@ -1,22 +1,23 @@
+from typing import Iterator
 import numpy as np
 
-from umriss.types import IntContour, Contour
-from umriss.drawing import LineDrawing
-from umriss.numpy_tools import roll_prev, roll_next
-from .abstract import Approximation
-from .contour_tools import simplify_contour
+from umriss.bitmap import GrayPixels
+from umriss.contour import LineContour
+from umriss.drawing import Glyph
+from umriss.utils import roll_prev, roll_next, simplify_polygon
+from .abstract import Tracing
+from .binarized_exact import BinarizedExact
 
 
-class AccuratePolygon(Approximation[Contour]):
+class BinarizedPolygon(Tracing):
     """
-    Approximates a pixel contour with a polygon.
-    The resulting contour, when rasterized again into
+    Binarizes the bitmap using a simple threshold method
+    and traces it with polygon contours.
+    The resulting drawing, when rasterized again into
     a black-and-white bitmap, should match the original bitmap.
-    Maximum distance between the original and the result is 0.5 px.
+    Maximum distance from the exact pixel contour is 0.5 px.
     Preserves the symmetries of the original image.
     """
-    DrawingType = LineDrawing
-    
     
     def __init__(self, max_slope_ratio: int=10, corner_offset: float=0.25):
         if max_slope_ratio < 1:
@@ -26,13 +27,25 @@ class AccuratePolygon(Approximation[Contour]):
         if not 0 <= corner_offset <= 0.25:
             raise ValueError('`corner_offset` should be between 0 and 0.25')
         self.corner_offset = corner_offset
-
-
-    def approximate_contour(self, exact_contour: IntContour) -> Contour:
         
+        self.binarized_exact = BinarizedExact()
+    
+    
+    def get_glyphs(self, pixels: GrayPixels) -> Iterator[Glyph[LineContour]]:
+        exact_glyphs = self.binarized_exact.get_glyphs(pixels)
+        
+        for glyph in exact_glyphs:
+            contours = [
+                self._polygonize_contour(contour)
+                for contour in glyph.contours
+            ]
+            yield Glyph[LineContour](contours)
+    
+    
+    def _polygonize_contour(self, exact_contour: LineContour) -> LineContour:
         # We need 4 points and 3 segments between them
         # TODO: cad matrices or a window be used?
-        pnt_cur = exact_contour
+        pnt_cur = exact_contour.points
         pnt_prev = roll_prev(pnt_cur)
         pnt_next = roll_next(pnt_cur)
         pnt_next_next = roll_next(pnt_next)
@@ -48,7 +61,7 @@ class AccuratePolygon(Approximation[Contour]):
         
         # single-pixel contour is returned as is
         if len(pnt_cur) <= 4 and (len_next == 1).all():
-            return pnt_cur
+            return LineContour(pnt_cur)
         
         # most new vertices will be at the segment centers
         seg_points = (pnt_cur + pnt_next) / 2
@@ -92,4 +105,5 @@ class AccuratePolygon(Approximation[Contour]):
         points_to_add = np.concatenate((corner_points, points_to_add))
         seg_points = np.insert(seg_points, indices_to_add, points_to_add, axis=0)
         
-        return simplify_contour(seg_points)
+        simplified = simplify_polygon(seg_points)
+        return LineContour(simplified)

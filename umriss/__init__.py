@@ -1,54 +1,56 @@
 from typing import Any, TypeVar
 
-from .drawing import ExactDrawing, LineDrawing, QuadraticDrawing, CubicDrawing
-from .image import Image
+from .contour import Contour
+from .drawing import Drawing, LineDrawing, CubicDrawing
+from .bitmap import Bitmap
 from .svg import SvgDocument
-from .approximation import Approximation, Exact
+from .tracing import Tracing
+from .approximation import Approximation
 
 
-TContour = TypeVar('TContour')
+TContour = TypeVar('TContour', bound=Contour)
 
 def trace(
         input_bitmap_file: str,
         output_svg_file: str,
+        tracing: Tracing,
         approximation: Approximation[TContour],
         scale: float=1.0,
         debug_mode: bool=False
 ) -> None:
     """
-    Traces the `input_bitmap_file` into SVG and saves it as `output_svg_file`.
-    A contour `approximation` is used if specified.
+    Traces the `input_bitmap_file` using the given `tracing` method,
+    then, uses the given contour `approximation`,
+    renders the result as an SVG document, and saves it as `output_svg_file`.
     `scale` affects only the coordinates in paths (e.g. to make them integer),
     it is cancelled out by a group transform.
     In `debug_mode`, the approximated contours are drawn as stroke over the exact ones.
     """
-    image = Image(input_bitmap_file)
-    svg = SvgDocument(image.width, image.height)
+    bitmap = Bitmap(input_bitmap_file)
+    traced = tracing.trace_bitmap(bitmap)
+    approximated = approximation.approximate_drawing(traced)
+    
+    svg = SvgDocument(bitmap.width, bitmap.height)
     
     if debug_mode:
-        _add_drawing(svg, image.drawing, Exact(), 1.0, opacity=0.1)
-        _add_drawing(svg, image.drawing, approximation, scale, fill='none', stroke='blue', stroke_width=0.1)
+        _add_drawing(svg, traced, scale, opacity=0.1)
+        _add_drawing(svg, approximated, scale, fill='none', stroke='blue', stroke_width=0.1)
     else:
-        _add_drawing(svg, image.drawing, approximation, scale)
+        _add_drawing(svg, approximated, scale)
     
     svg.save(output_svg_file)
 
 
 def _add_drawing(
         svg: SvgDocument,
-        drawing: ExactDrawing,
-        approximation: Approximation[TContour],
+        drawing: Drawing[TContour],
         scale: float,
         **attributes: Any
 ) -> None:
-    approximated_drawing = approximation.approximate_drawing(drawing)
-    
-    match approximated_drawing:
-        case ExactDrawing() | LineDrawing():
-            svg.add_line_drawing(approximated_drawing, scale, **attributes)
-        case QuadraticDrawing():
-            svg.add_quadratic_drawing(approximated_drawing, scale, **attributes)
+    match drawing:
+        case LineDrawing():
+            svg.add_line_drawing(drawing, scale, **attributes)
         case CubicDrawing():
-            svg.add_cubic_drawing(approximated_drawing, scale, **attributes)
+            svg.add_cubic_drawing(drawing, scale, **attributes)
         case _:
             raise TypeError('Unsupported drawing type.')

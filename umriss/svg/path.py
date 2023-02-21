@@ -97,9 +97,9 @@ class Path:
         self.last_cubic_ctrl = _zero
     
     
-    NodeType = Literal['m', 'h', 'v', 'l', 't', 'q', 's', 'c', 'z']
+    _NodeType = Literal['m', 'h', 'v', 'l', 't', 'q', 's', 'c', 'z']
     
-    def _add_node(self, node_type: NodeType, *values: float) -> None:
+    def _add_node(self, node_type: _NodeType, *values: float) -> None:
         formated = (self._format_value(v) for v in values)
         self.nodes.append(node_type + ','.join(formated))
     
@@ -112,4 +112,4 @@ class Path:
             return formatted
 
 
-_zero = np.array([0.0, 0.0])
+_zero: Point = np.array([0.0, 0.0])

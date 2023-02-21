@@ -1,13 +1,14 @@
-from umriss.types import IntContour
-from umriss.drawing import ExactDrawing
+from umriss.contour import LineContour
+from umriss.drawing import LineDrawing
 from .abstract import Approximation
 
 
-class Exact(Approximation[IntContour]):
+class Exact(Approximation[LineContour]):
     """
-    Leaves contours as is.
+    Leaves the contour as is.
     """
-    DrawingType = ExactDrawing
+    DrawingType = LineDrawing
     
-    def approximate_contour(self, exact_contour: IntContour) -> IntContour:
-        return exact_contour
+    
+    def approximate_contour(self, contour: LineContour) -> LineContour:
+        return contour
