@@ -1,3 +1,7 @@
+from functools import cached_property
+import numpy as np
+import cv2 as cv
+
 from umriss.types import Points, CubicNodes
 from .bounding_box import BoundingBox
 
@@ -15,13 +19,15 @@ class LineContour(Contour):
     """
     def __init__(self, points: Points):
         self.points = points
-        self._bounds: BoundingBox | None = None
     
-    @property
+    @cached_property
     def bounds(self) -> BoundingBox:
-        if self._bounds is None:
-            self._bounds = BoundingBox(self.points)
-        return self._bounds
+        return BoundingBox(self.points)
+    
+    @cached_property
+    def signed_area(self) -> float:
+        area: float = cv.contourArea(self.points.astype(np.float32), oriented=True)
+        return -area
 
 
 class CubicContour(Contour):

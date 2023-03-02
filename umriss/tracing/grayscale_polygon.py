@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum, auto
+from functools import cached_property
 from typing import Iterable, Iterator
 import numpy as np
+import cv2 as cv
 import skimage as si
 
 from umriss.bitmap import GrayPixels
@@ -25,12 +27,34 @@ class GrayscalePolygon(Tracing):
     
     def get_glyphs(self, pixels: GrayPixels) -> Iterator[Glyph[LineContour]]:
         height, width = pixels.shape
-        contours = si.measure.find_contours(pixels.T, self.threshold, positive_orientation='high')
+        contours = [
+            LineContour(simplify_polygon(c))
+            for c in _get_contours(pixels, self.threshold, width, height)
+        ]
+        outer_contours = (c for c in contours if c.signed_area > 0)
+        inner_contours = set(c for c in contours if c.signed_area < 0)
+        
+        for outer_contour in sorted(outer_contours, key=lambda c: c.signed_area):
+            outer_points = outer_contour.points.astype(np.float32)
+            glyph_contours = [
+                c for c in inner_contours
+                if cv.pointPolygonTest(outer_points, c.points[0], False) > 0
+            ]
+            inner_contours.difference_update(glyph_contours)
+            glyph_contours.insert(0, outer_contour)
+            yield Glyph[LineContour](glyph_contours)
+        
+        if len(inner_contours) > 0:
+            canvas = LineContour(_get_corners(width, height))
+            glyph_contours = [canvas]
+            glyph_contours.extend(inner_contours)
+            yield Glyph[LineContour](glyph_contours)
+
+
+def _get_contours(pixels: GrayPixels, threshold: float, width: int, height: int) -> list[Points]:
+        contours = si.measure.find_contours(pixels.T, threshold, positive_orientation='high')
         contours = (c + 0.5 for c in contours)
-        contours = _connect_open_contours(contours, width, height)
-        line_contours = [LineContour(simplify_polygon(c)) for c in contours]
-        glyph = Glyph[LineContour](line_contours)
-        yield glyph
+        return _connect_open_contours(contours, width, height)
 
 
 def _connect_open_contours(contours: Iterable[Points], width: int, height: int) -> list[Points]:
@@ -53,13 +77,10 @@ def _connect_open_contours(contours: Iterable[Points], width: int, height: int) 
         contour: Points | None = None
         is_start: bool = False
         
-        _angle: float | None = None
-        
-        @property
+        @cached_property
         def angle(self) -> float:
-            if self._angle is None:
-                self._angle = np.arctan2(*(self.point - center))
-            return self._angle
+            angle: float = np.arctan2(*(self.point - center))
+            return angle
     
     edge_points = [EdgePoint(corner) for corner in _get_corners(width, height)]
     closed_contours: list[Points] = []
@@ -92,7 +113,7 @@ def _connect_open_contours(contours: Iterable[Points], width: int, height: int) 
         STOP = auto()
     
     current_contour = []
-    state = State.FIND_FIRST
+    state = State.FIND_FIRST if len(open_contour_starts) > 0 else State.STOP
     
     while state != State.STOP:
         for ep in edge_points:
