@@ -13,5 +13,6 @@ class BoundingBox:
         self.top    = np.min(points[:, 1])
         self.bottom = np.max(points[:, 1])
         
-        self.center: Point = np.array([(self.left + self.right) / 2, (self.top - self.bottom) / 2])
+        self.origin: Point = np.array([self.left, self.top])
         self.size: Vector = np.array([self.right - self.left, self.bottom - self.top])
+        self.center: Point = self.origin + self.size / 2

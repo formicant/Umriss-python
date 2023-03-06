@@ -5,6 +5,7 @@ from .drawing import Drawing, LineDrawing, CubicDrawing
 from .bitmap import Bitmap
 from .svg import SvgDocument
 from .tracing import Tracing
+from .unification import unify_glyphs
 from .approximation import Approximation
 
 
@@ -28,6 +29,7 @@ def trace(
     """
     bitmap = Bitmap(input_bitmap_file)
     traced = tracing.trace_bitmap(bitmap)
+    traced = unify_glyphs(traced, 2)
     approximated = approximation.approximate_drawing(traced)
     
     svg = SvgDocument(bitmap.width, bitmap.height)
