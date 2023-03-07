@@ -25,9 +25,15 @@ class Approximation(ABC, Generic[TContour]):
             Glyph[TContour]([self.approximate_contour(c) for c in glyph.contours])
             for glyph in drawing.glyphs
         ]
+        approximated_referenced_glyphs = [
+            Glyph[TContour]([self.approximate_contour(c) for c in glyph.contours])
+            for glyph in drawing.referenced_glyphs
+        ]
         approximated_drawing: Drawing[TContour] = self.DrawingType(
             drawing.width, drawing.height,
-            approximated_glyphs
+            approximated_glyphs,
+            approximated_referenced_glyphs,
+            drawing.references
         )
         return approximated_drawing
     

@@ -1,5 +1,5 @@
 from abc import ABC
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 from .types import Vector
@@ -23,20 +23,10 @@ class Glyph(Generic[TContour]):
 
 
 @dataclass
-class Font(Generic[TContour]):
+class GlyphReference:
     """
-    Represents a set of glyphs which can be referenced
-    multiple times in drawings.
+    Represents a reference to a glyph.
     """
-    glyphs: list[Glyph[TContour]]
-
-
-@dataclass
-class GlyphReference(Generic[TContour]):
-    """
-    Represents a reference to a glyph in a font.
-    """
-    font: Font[TContour]
     index: int
     offset: Vector
 
@@ -44,12 +34,15 @@ class GlyphReference(Generic[TContour]):
 @dataclass
 class Drawing(ABC, Generic[TContour]):
     """
-    Represents a vector image consisting of `Glyph`s.
+    Represents a vector image consisting of `glyphs`.
+    `referenced_glyphs` are glyphs occurring multiple times in the image.
+    `references` define positions of each occurrence.
     """
     width: float
     height: float
     glyphs: list[Glyph[TContour]]
-    glyph_references: list[GlyphReference[TContour]] | None = None
+    referenced_glyphs: list[Glyph[TContour]] = field(default_factory=lambda: [])
+    references: list[GlyphReference] = field(default_factory=lambda: [])
 
 
 class LineDrawing(Drawing[LineContour]):

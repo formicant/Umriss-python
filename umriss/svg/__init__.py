@@ -3,8 +3,9 @@ from umriss.contour import LineContour
 
 from umriss.contour import Contour, CubicContour
 from umriss.drawing import Drawing, LineDrawing, CubicDrawing
-from .group import Group
-from .path import Path
+from .debug_colors import get_debug_color
+from .element import Element
+from .path_data import PathData
 
 
 class SvgDocument:
@@ -17,20 +18,12 @@ class SvgDocument:
     """
     
     def __init__(self, width: float, height: float, decimals: int=2):
-        self.width = width
-        self.height = height
         self.decimals = decimals
-        
-        self.groups: list[Group] = []
+        self.svg = Element('svg', width=width, height=height, xmlns=_xmlns, xmlns__xlink=_xmlns_xlink)
     
     
     def render(self) -> str:
-        groups = (group.render() for group in self.groups)
-        return _svg_template.format(
-            width=self.width,
-            height=self.height,
-            groups='\n '.join(groups)
-        )
+        return _xml_declaration + self.svg.render()
     
     
     def save(self, filename: str) -> None:
@@ -38,62 +31,88 @@ class SvgDocument:
             file.write(self.render())
     
     
-    def add_line_drawing(self, drawing: LineDrawing, scale: float=1.0, **attributes: Any) -> None:
-        self._add_drawing(self._add_line_contour, drawing, scale, attributes)
+    def add_line_drawing(self, drawing: LineDrawing, scale: float=1.0) -> None:
+        self._add_drawing(self._add_line_contour, drawing, scale)
     
     
-    def add_cubic_drawing(self, drawing: CubicDrawing, scale: float=1.0, **attributes: Any) -> None:
-        self._add_drawing(self._add_cubic_contour, drawing, scale, attributes)
+    def add_cubic_drawing(self, drawing: CubicDrawing, scale: float=1.0) -> None:
+        self._add_drawing(self._add_cubic_contour, drawing, scale)
     
     
     _TContour = TypeVar('_TContour', bound=Contour)
     
     def _add_drawing(self,
-            add_contour: Callable[[Path, _TContour, float], None],
+            add_contour: Callable[[PathData, _TContour, float], None],
             drawing: Drawing[Any],
             scale: float,
-            attributes: dict[str, Any]
     ) -> None:
+        attributes = dict()
         if scale != 1.0:
             attributes['transform'] = f'scale({1 / scale})'
         
-        group = Group(attributes, self.decimals)
+        if len(drawing.references) > 0:
+            defs = Element('defs')
+            for index, glyph in enumerate(drawing.referenced_glyphs):
+                path_data = PathData(self.decimals)
+                for contour in glyph.contours:
+                    add_contour(path_data, contour, scale)
+                defs.add_child(Element('path',
+                    id=f'g{index}',
+                    d=path_data,
+                    fill=get_debug_color(index)  # for debugging purposes
+                ))
+            self.svg.add_child(defs)
         
+        group = Element('g', **attributes)
         for glyph in drawing.glyphs:
-            path = Path(self.decimals)
+            path_data = PathData(self.decimals)
             for contour in glyph.contours:
-                add_contour(path, contour, scale)
-            group.add_path(path)
+                add_contour(path_data, contour, scale)
+            group.add_child(Element('path', d=path_data))
         
-        self.groups.append(group)
+        for ref in drawing.references:
+            group.add_child(Element('use',
+                xlink__href=f'#g{ref.index}',
+                x=self._format_value(ref.offset[0]),
+                y=self._format_value(ref.offset[1])
+            ))
+        
+        self.svg.add_child(group)
     
     
-    def _add_line_contour(self, path: Path, contour: LineContour, scale: float) -> None:
+    def _add_line_contour(self, path_data: PathData, contour: LineContour, scale: float) -> None:
         points = contour.points if scale == 1.0 else scale * contour.points
         
         start_point = points[0]
-        path.add_move_node(start_point)
+        path_data.add_move_node(start_point)
         
         for point in points[1:]:
-            path.add_line_node(point)
+            path_data.add_line_node(point)
         
-        path.add_close_node()
+        path_data.add_close_node()
     
     
-    def _add_cubic_contour(self, path: Path, contour: CubicContour, scale: float) -> None:
+    def _add_cubic_contour(self, path_data: PathData, contour: CubicContour, scale: float) -> None:
         nodes = contour.nodes if scale == 1.0 else scale * contour.nodes
         
         [_, _, end_point] = nodes[-1]
-        path.add_move_node(end_point)
+        path_data.add_move_node(end_point)
         
         for node in nodes:
-            path.add_cubic_node(node)
+            path_data.add_cubic_node(node)
         
-        path.add_close_node()
+        path_data.add_close_node()
+    
+    
+    def _format_value(self, value: float) -> str:
+        formatted = '{:.{d}f}'.format(value, d=self.decimals)
+        if self.decimals > 0:
+            return formatted.rstrip('0').rstrip('.')
+        else:
+            return formatted
 
 
-_svg_template = '''<?xml version="1.0" encoding="UTF-8"?>
-<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
- {groups}
-</svg>
-'''
+_xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>\n'
+
+_xmlns = "http://www.w3.org/2000/svg"
+_xmlns_xlink = "http://www.w3.org/1999/xlink"

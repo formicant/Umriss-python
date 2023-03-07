@@ -16,8 +16,7 @@ def trace(
         output_svg_file: str,
         tracing: Tracing,
         approximation: Approximation[TContour],
-        scale: float=1.0,
-        debug_mode: bool=False
+        scale: float=1.0
 ) -> None:
     """
     Traces the `input_bitmap_file` using the given `tracing` method,
@@ -29,16 +28,12 @@ def trace(
     """
     bitmap = Bitmap(input_bitmap_file)
     traced = tracing.trace_bitmap(bitmap)
-    traced = unify_glyphs(traced, 2)
+    traced = unify_glyphs(traced, 1)
     approximated = approximation.approximate_drawing(traced)
     
     svg = SvgDocument(bitmap.width, bitmap.height)
     
-    if debug_mode:
-        _add_drawing(svg, traced, scale, opacity=0.1)
-        _add_drawing(svg, approximated, scale, fill='none', stroke='blue', stroke_width=0.1)
-    else:
-        _add_drawing(svg, approximated, scale)
+    _add_drawing(svg, approximated, scale)
     
     svg.save(output_svg_file)
 
@@ -46,13 +41,12 @@ def trace(
 def _add_drawing(
         svg: SvgDocument,
         drawing: Drawing[TContour],
-        scale: float,
-        **attributes: Any
+        scale: float
 ) -> None:
     match drawing:
         case LineDrawing():
-            svg.add_line_drawing(drawing, scale, **attributes)
+            svg.add_line_drawing(drawing, scale)
         case CubicDrawing():
-            svg.add_cubic_drawing(drawing, scale, **attributes)
+            svg.add_cubic_drawing(drawing, scale)
         case _:
             raise TypeError('Unsupported drawing type.')

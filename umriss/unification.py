@@ -3,7 +3,7 @@ import cv2 as cv
 
 from .types import Vector
 from .contour import LineContour
-from .drawing import Font, Glyph, GlyphReference, LineDrawing
+from .drawing import Glyph, GlyphReference, LineDrawing
 
 
 def unify_glyphs(drawing: LineDrawing, distance: float) -> LineDrawing:
@@ -23,30 +23,31 @@ def unify_glyphs(drawing: LineDrawing, distance: float) -> LineDrawing:
     indices = np.argsort(counts)[::-1]
     indices_left = set(range(n))
     
-    font_glyphs = []
-    free_glyphs = []
-    ref_glyph_offsets = []
+    free_glyphs: list[Glyph[LineContour]] = []
+    ref_glyphs: list[Glyph[LineContour]] = []
+    references: list[GlyphReference] = []
     
     for index in indices:
         if index in indices_left:
             row = masked[index]
             base_glyph = drawing.glyphs[index]
             if counts[index] > 1:
-                offsets = []
-                ref_indices = np.nonzero(1 - row.mask[:, 0])
-                for ref_index in ref_indices:
-                    offsets.append(row[ref_index])
-                
                 base_offset = -base_glyph.contours[0].bounds.origin
-                font_glyphs.append(_offset_glyph(base_glyph, base_offset))
-                ref_glyph_offsets.append(offsets)
+                offsets = []
+                (ref_indices,) = np.nonzero(1 - row.mask[:, 0])
+                for ref_index in ref_indices:
+                    offsets.append(row.data[ref_index] - base_offset)
+                
+                ref_glyph_index = len(ref_glyphs)
+                ref_glyphs.append(_offset_glyph(base_glyph, base_offset))
+                references.extend(GlyphReference(ref_glyph_index, o) for o in offsets)
+                
+                indices_left.difference_update(ref_indices)
             else:
                 free_glyphs.append(base_glyph)
+                indices_left.remove(index)
     
-    font = Font(font_glyphs)
-    references = [GlyphReference(font, i, o) for i, o in enumerate(ref_glyph_offsets)]
-    
-    return LineDrawing(drawing.width, drawing.height, free_glyphs, references)
+    return LineDrawing(drawing.width, drawing.height, free_glyphs, ref_glyphs, references)
 
 
 def _get_similar_glyph_offset(g1: Glyph[LineContour], g2: Glyph[LineContour], distance: float) -> Vector:

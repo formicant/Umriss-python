@@ -4,13 +4,15 @@ import numpy as np
 from umriss.types import Point, QuadraticNode, CubicNode
 
 
-class Path:
+class PathData:
     """
-    Generates an SVG `path` element.
+    Generates path data for an SVG `path` element.
     
-    Create a `Path`, add nodes you want, then, `render` it.
+    Create a `PathData`, add nodes you want, then,
+    use it as a value of a `path` `d` attribute.
+    
     The node-adding methods take absolute coordinates.
-    The rendered path, however, uses relative ones.
+    The rendered path data, however, uses relative ones.
     The values are rounded to the specified number of `decimals`.
     Briefer node types (`h`, `v`, `t`, `s`) are used when possible.
     `a`-nodes are not supported.
@@ -28,9 +30,8 @@ class Path:
         self.last_cubic_ctrl = _zero
     
     
-    def render(self) -> str:
-        data = ''.join(self.nodes)
-        return f'<path d="{data}" />'
+    def __str__(self) -> str:
+        return ''.join(self.nodes)
     
     
     def add_move_node(self, point: Point) -> None:
