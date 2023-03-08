@@ -1,18 +1,20 @@
 from nptyping import NDArray, Shape, Number
 import numpy as np
 
-from .types import Point, Vector
+from .types import Point, Points, Vector
 
 
 class BoundingBox:
     def __init__(self, points: NDArray[Shape['*, [x, y]'], Number]):
         
         # `cv.boundingRect` rounds floats. Using numpy instead
-        self.left   = np.min(points[:, 0])
-        self.right  = np.max(points[:, 0])
-        self.top    = np.min(points[:, 1])
-        self.bottom = np.max(points[:, 1])
+        left   = np.min(points[:, 0])
+        right  = np.max(points[:, 0])
+        top    = np.min(points[:, 1])
+        bottom = np.max(points[:, 1])
         
-        self.origin: Point = np.array([self.left, self.top])
-        self.size: Vector = np.array([self.right - self.left, self.bottom - self.top])
+        self.points: Points = np.array([[left, top], [right, bottom]])
+        
+        self.origin: Point = self.points[0]
+        self.size: Vector = self.points[1] - self.points[0]
         self.center: Point = self.origin + self.size / 2
