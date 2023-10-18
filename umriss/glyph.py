@@ -3,8 +3,6 @@ from typing import Self
 from abc import ABC
 from dataclasses import dataclass
 from typing import Generic, TypeVar
-from functools import cached_property
-import numpy as np
 
 from .types import Vector
 from .contour import Contour
@@ -20,24 +18,25 @@ class Glyph(Generic[TContour]):
     the others being inner contours (holes).
     """
     contours: list[TContour]
+    hash: int|None = None
     
     @property
     def outer_contour(self) -> TContour:
         return self.contours[0]
     
-    @cached_property
-    def hash(self) -> int:
-        hash = 0
-        for contour in self.contours:
-            hash ^= contour.hash
-        return hash
+    def __hash__(self) -> int:
+        if self.hash is None:
+            self.hash = 0
+            for contour in self.contours:
+                self.hash ^= hash(contour)
+        return self.hash
     
-    def is_equal_to(self, other: Self) -> bool:
-        if len(self.contours) != len(other.contours):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Glyph) or len(self.contours) != len(other.contours):
             return False;
-        self_contours = sorted(self.contours, key=lambda c: c.hash)
-        other_contours = sorted(self.contours, key=lambda c: c.hash)
-        return all(s.is_equal_to(o) for s, o in zip(self_contours, other_contours))
+        self_contours = sorted(self.contours, key=lambda c: hash(c))
+        other_contours = sorted(self.contours, key=lambda c: hash(c))
+        return all(s == o for s, o in zip(self_contours, other_contours))
     
     def offset(self, offset: Vector) -> Glyph[TContour]:
         return Glyph[TContour]([c.offset(offset) for c in self.contours])
@@ -67,5 +66,5 @@ class GlyphReference(GlyphOccurrence[TContour]):
     """
     Represents a reference to a glyph.
     """
-    is_shared: bool
     index: int
+    is_shared: bool

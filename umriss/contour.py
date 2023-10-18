@@ -19,17 +19,16 @@ class Contour(ABC):
     def bounds(self) -> BoundingBox:
         raise NotImplementedError
     
-    @property
     @abstractmethod
-    def hash(self) -> int:
+    def __hash__(self) -> int:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def __eq__(self, other: object) -> bool:
         raise NotImplementedError
     
     @abstractmethod
     def standardize(self) -> Self:
-        raise NotImplementedError
-    
-    @abstractmethod
-    def is_equal_to(self, other: Self) -> bool:
         raise NotImplementedError
     
     @abstractmethod
@@ -43,6 +42,7 @@ class LineContour(Contour):
     """
     def __init__(self, points: Points):
         self.points = points
+        self.hash: int|None = None
     
     @cached_property
     def bounds(self) -> BoundingBox:
@@ -53,9 +53,13 @@ class LineContour(Contour):
         area: float = cv.contourArea(self.points.astype(np.float32), oriented=True)
         return -area
     
-    @cached_property
-    def hash(self) -> int:
-        return hash(self.points.data)
+    def __hash__(self) -> int:
+        if self.hash is None:
+            self.hash = hash(self.points.tobytes())
+        return self.hash
+    
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, LineContour) and are_equal(self.points, other.points)
     
     def standardize(self) -> LineContour:
         """
@@ -65,9 +69,6 @@ class LineContour(Contour):
         start_insex = lexicographic_argmin(self.points)
         points = np.roll(self.points, -start_insex, axis=0)
         return LineContour(points)
-    
-    def is_equal_to(self, other: LineContour) -> bool:
-        return are_equal(self.points, other.points)
     
     def offset(self, offset: Vector) -> LineContour:
         return LineContour(self.points + offset)

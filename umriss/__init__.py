@@ -6,6 +6,7 @@ from .bitmap import Bitmap
 from .svg import SvgDocument
 from .tracing import Tracing
 from .approximation import Approximation
+from .unification import unify_identical_glyphs
 
 
 TContour = TypeVar('TContour', bound=Contour)
@@ -27,7 +28,7 @@ def trace(
     """
     bitmap = Bitmap(input_bitmap_file)
     traced = tracing.trace_bitmap(bitmap)
-    # traced = unify_glyphs(traced, 3)
+    traced = unify_identical_glyphs(traced)
     approximated = approximation.approximate_drawing(traced)
     
     svg = SvgDocument(bitmap.width, bitmap.height)

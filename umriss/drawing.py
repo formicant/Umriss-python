@@ -21,6 +21,7 @@ class Drawing(ABC, Generic[TContour]):
     referenced_glyphs: list[Glyph[TContour]] = field(default_factory=lambda: [])
 
 
+@dataclass
 class LineDrawing(Drawing[LineContour]):
     """
     Vector image consisting of polygons.
@@ -28,6 +29,7 @@ class LineDrawing(Drawing[LineContour]):
     pass
 
 
+@dataclass
 class CubicDrawing(Drawing[CubicContour]):
     """
     Vector image consisting of cubic Bézier splines.
