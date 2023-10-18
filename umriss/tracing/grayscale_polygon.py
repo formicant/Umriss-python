@@ -38,7 +38,7 @@ class GrayscalePolygon(Tracing):
             outer_points = outer_contour.points.astype(np.float32)
             glyph_contours = [
                 c for c in inner_contours
-                if cv.pointPolygonTest(outer_points, c.points[0], False) > 0
+                if cv.pointPolygonTest(outer_points, c.points[0], False) >= 0
             ]
             inner_contours.difference_update(glyph_contours)
             glyph_contours.insert(0, outer_contour)
@@ -49,6 +49,7 @@ class GrayscalePolygon(Tracing):
             glyph_contours = [canvas]
             glyph_contours.extend(inner_contours)
             yield Glyph[LineContour](glyph_contours)
+            
 
 
 def _get_contours(pixels: GrayPixels, threshold: float, width: int, height: int) -> list[Points]:

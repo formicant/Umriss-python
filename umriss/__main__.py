@@ -8,10 +8,10 @@ from .approximation import Exact, DouglasPeuckerPolygon, SillyCubic
 if __name__ == '__main__':
     # TODO: add CLI
     
-    input_bitmap_file = 'tmp/gray600.png'
-    output_svg_file = 'tmp/out.svg'
-    tracing = GrayscalePolygon(200)
-    approximation = DouglasPeuckerPolygon(0.5)
+    input_bitmap_file = 'tmp/input_ku/174.tif'
+    output_svg_file = 'tmp/out/out.svg'
+    tracing = BinarizedPolygon()
+    approximation = Exact() # DouglasPeuckerPolygon(0.5)
     scale = 1.0
     
     start = default_timer()
