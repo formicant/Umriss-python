@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Sequence
 
 from umriss.contour import Contour, LineContour
-from umriss.drawing import Drawing, LineDrawing, Glyph
+from umriss.drawing import Drawing, LineDrawing
+from umriss.glyph import GlyphOccurrence, GlyphInstance, GlyphReference, Glyph
 
 
 TContour = TypeVar('TContour', bound=Contour)
@@ -21,10 +22,19 @@ class Approximation(ABC, Generic[TContour]):
     
     
     def approximate_drawing(self, drawing: LineDrawing) -> Drawing[TContour]:
-        approximated_glyphs = [
-            Glyph[TContour]([self.approximate_contour(c) for c in glyph.contours])
-            for glyph in drawing.glyphs
-        ]
+        approximated_glyphs: list[GlyphOccurrence[TContour]] = []
+        for occurrence in drawing.glyph_occurrences:
+            match occurrence:
+                case GlyphInstance():
+                    approximated_glyphs.append(GlyphInstance[TContour](
+                        occurrence.position,
+                        Glyph[TContour]([self.approximate_contour(c) for c in occurrence.glyph.contours])
+                    ))
+                case GlyphReference():
+                    approximated_glyphs.append(occurrence)
+                case _:
+                    raise TypeError('Unsupported glyph occurrence type')
+        
         approximated_referenced_glyphs = [
             Glyph[TContour]([self.approximate_contour(c) for c in glyph.contours])
             for glyph in drawing.referenced_glyphs
@@ -32,8 +42,7 @@ class Approximation(ABC, Generic[TContour]):
         approximated_drawing: Drawing[TContour] = self.DrawingType(
             drawing.width, drawing.height,
             approximated_glyphs,
-            approximated_referenced_glyphs,
-            drawing.references
+            approximated_referenced_glyphs
         )
         return approximated_drawing
     

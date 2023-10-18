@@ -8,7 +8,7 @@ import skimage as si
 
 from umriss.bitmap import GrayPixels
 from umriss.contour import LineContour
-from umriss.drawing import Glyph
+from umriss.glyph import Glyph
 from umriss.types import Point, Points
 from umriss.utils import simplify_polygon
 from .abstract import Tracing

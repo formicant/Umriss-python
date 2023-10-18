@@ -6,7 +6,7 @@ import cv2 as cv
 from umriss.types import IntPoint, IntVectors
 from umriss.bitmap import GrayPixels
 from umriss.contour import LineContour
-from umriss.drawing import Glyph
+from umriss.glyph import Glyph
 from umriss.utils import roll_prev, roll_next
 from .abstract import Tracing
 

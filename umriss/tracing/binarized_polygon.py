@@ -3,7 +3,7 @@ import numpy as np
 
 from umriss.bitmap import GrayPixels
 from umriss.contour import LineContour
-from umriss.drawing import Glyph
+from umriss.glyph import Glyph
 from umriss.utils import roll_prev, roll_next, simplify_polygon
 from .abstract import Tracing
 from .binarized_exact import BinarizedExact

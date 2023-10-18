@@ -3,6 +3,7 @@ from umriss.contour import LineContour
 
 from umriss.contour import Contour, CubicContour
 from umriss.drawing import Drawing, LineDrawing, CubicDrawing
+from umriss.glyph import GlyphInstance, GlyphReference
 from .debug_colors import get_debug_color
 from .element import Element
 from .path_data import PathData
@@ -50,7 +51,7 @@ class SvgDocument:
         if scale != 1.0:
             attributes['transform'] = f'scale({1 / scale})'
         
-        if len(drawing.references) > 0:
+        if len(drawing.referenced_glyphs) > 0:
             defs = Element('defs')
             for index, glyph in enumerate(drawing.referenced_glyphs):
                 path_data = PathData(self.decimals)
@@ -64,18 +65,21 @@ class SvgDocument:
             self.svg.add_child(defs)
         
         group = Element('g', **attributes)
-        for glyph in drawing.glyphs:
-            path_data = PathData(self.decimals)
-            for contour in glyph.contours:
-                add_contour(path_data, contour, scale)
-            group.add_child(Element('path', d=path_data))
-        
-        for ref in drawing.references:
-            group.add_child(Element('use',
-                xlink__href=f'#g{ref.index}',
-                x=self._format_value(ref.offset[0]),
-                y=self._format_value(ref.offset[1])
-            ))
+        for occurrence in drawing.glyph_occurrences:
+            match occurrence:
+                case GlyphInstance():
+                    path_data = PathData(self.decimals)
+                    for contour in occurrence.glyph.contours:
+                        add_contour(path_data, contour.offset(occurrence.position), scale)
+                    group.add_child(Element('path', d=path_data))
+                case GlyphReference():
+                    group.add_child(Element('use',
+                        xlink__href=f'#g{occurrence.index}',
+                        x=self._format_value(occurrence.position[0]),
+                        y=self._format_value(occurrence.position[1])
+                    ))
+                case _:
+                    raise TypeError('Unsupported glyph occurrence type')
         
         self.svg.add_child(group)
     

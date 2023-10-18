@@ -7,6 +7,14 @@ from .types import Points, Vectors
 
 T = TypeVar('T', bound=np.generic)
 
+def lexicographic_argmin(points: Points) -> int:
+    xs = points[:, 0]
+    min_by_x = xs.min()
+    indices = np.where(xs == min_by_x)[0]
+    argmin: int = indices[np.argmin(points[indices, 1])]
+    return argmin
+
+
 def roll_prev(points: npt.NDArray[T], steps: int=1) -> npt.NDArray[T]:
     return np.roll(points, steps, axis=0)
 
@@ -25,6 +33,12 @@ def normalize(vectors: Vectors) -> Vectors:
 
 
 _epsilon = 1e-12
+
+def are_equal(points1: Points, points2: Points, epsilon: float=_epsilon) -> bool:
+    if points1.shape != points2.shape:
+        return False;
+    max_abs_difference: float = np.max(np.absolute(points1 - points2))
+    return max_abs_difference <= epsilon
 
 
 def simplify_polygon(polygon: Points, epsilon: float=_epsilon) -> Points:

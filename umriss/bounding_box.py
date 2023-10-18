@@ -1,11 +1,10 @@
-from nptyping import NDArray, Shape, Number
 import numpy as np
 
 from .types import Point, Points, Vector
 
 
 class BoundingBox:
-    def __init__(self, points: NDArray[Shape['*, [x, y]'], Number]):
+    def __init__(self, points: Points):
         
         # `cv.boundingRect` rounds floats. Using numpy instead
         left   = np.min(points[:, 0])
