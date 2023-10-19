@@ -1,6 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass, field
-from typing import Generic, TypeVar, Sequence
+from typing import Generic, TypeVar, Sequence, TypeAlias
 
 from .contour import Contour, LineContour, CubicContour
 from .glyph import GlyphOccurrence, Glyph
@@ -21,17 +21,12 @@ class Drawing(ABC, Generic[TContour]):
     referenced_glyphs: list[Glyph[TContour]] = field(default_factory=lambda: [])
 
 
-@dataclass
-class LineDrawing(Drawing[LineContour]):
-    """
-    Vector image consisting of polygons.
-    """
-    pass
+LineDrawing: TypeAlias = Drawing[LineContour]
+"""
+Vector image consisting of polygons.
+"""
 
-
-@dataclass
-class CubicDrawing(Drawing[CubicContour]):
-    """
-    Vector image consisting of cubic Bézier splines.
-    """
-    pass
+CubicDrawing: TypeAlias = Drawing[CubicContour]
+"""
+Vector image consisting of cubic Bézier splines.
+"""

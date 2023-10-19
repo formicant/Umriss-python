@@ -1,6 +1,7 @@
 import numpy as np
 
 from umriss.contour import LineContour, CubicContour
+from umriss.document import CubicDocument
 from umriss.drawing import CubicDrawing
 from umriss.utils import roll_prev, roll_next, normalize
 from umriss.types import CubicNodes, Points
@@ -14,6 +15,7 @@ class SillyCubic(Approximation[CubicContour]):
     The odd ones are used for tangents in a not-so-clever way.
     For tests only. The results can be terrible.
     """
+    DocumentType = CubicDocument
     DrawingType = CubicDrawing
     
     

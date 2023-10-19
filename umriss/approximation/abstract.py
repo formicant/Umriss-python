@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Sequence
+from typing import Generic, TypeVar
 
 from umriss.contour import Contour, LineContour
+from umriss.document import Document, LineDocument
 from umriss.drawing import Drawing, LineDrawing
 from umriss.glyph import GlyphOccurrence, GlyphInstance, GlyphReference, Glyph
 
@@ -17,8 +18,23 @@ class Approximation(ABC, Generic[TContour]):
     
     @property
     @abstractmethod
+    def DocumentType(self) -> type:
+        pass
+    
+    @property
+    @abstractmethod
     def DrawingType(self) -> type:
         pass
+    
+    
+    def approximate_document(self, document: LineDocument) -> Document[TContour]:
+        approximated_shared_glyphs = [
+            Glyph[TContour]([self.approximate_contour(c) for c in glyph.contours])
+            for glyph in document.shared_glyphs
+        ]
+        approximated_pages = [self.approximate_drawing(page) for page in document.pages]
+        
+        return self.DocumentType(approximated_pages, approximated_shared_glyphs)
     
     
     def approximate_drawing(self, drawing: LineDrawing) -> Drawing[TContour]:
@@ -39,7 +55,7 @@ class Approximation(ABC, Generic[TContour]):
             Glyph[TContour]([self.approximate_contour(c) for c in glyph.contours])
             for glyph in drawing.referenced_glyphs
         ]
-        approximated_drawing: Drawing[TContour] = self.DrawingType(
+        approximated_drawing = self.DrawingType(
             drawing.width, drawing.height,
             approximated_glyphs,
             approximated_referenced_glyphs

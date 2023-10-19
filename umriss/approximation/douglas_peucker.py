@@ -2,6 +2,7 @@ import numpy as np
 import cv2 as cv
 
 from umriss.contour import LineContour
+from umriss.document import LineDocument
 from umriss.drawing import LineDrawing
 from .abstract import Approximation
 
@@ -11,6 +12,7 @@ class DouglasPeuckerPolygon(Approximation[LineContour]):
     Approximates contours with polygons using the Douglas—Peucker algorithm.
     The maximum distance between the original and the result can be specified.
     """
+    DrocumentType = LineDocument
     DrawingType = LineDrawing
     
     

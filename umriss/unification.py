@@ -1,12 +1,15 @@
-from collections import defaultdict
-
-from .types import Points, Vector
 from .contour import LineContour
 from .drawing import  LineDrawing
 from .glyph import Glyph, GlyphOccurrence, GlyphInstance, GlyphReference
+from .document import LineDocument
 
 
-def unify_identical_glyphs(drawing: LineDrawing) -> LineDrawing:
+def unify_identical_glyphs(document: LineDocument) -> LineDocument:
+    unified_pages= [_unify_identical_glyphs(page) for page in document.pages]
+    return LineDocument(unified_pages)
+
+
+def _unify_identical_glyphs(drawing: LineDrawing) -> LineDrawing:
     glyph_instances = _get_glyph_instances(drawing)
     
     glyph_dict: dict[Glyph[LineContour], list[GlyphInstance[LineContour]]] = dict()
