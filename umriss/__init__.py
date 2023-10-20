@@ -25,9 +25,17 @@ def trace(
     `scale` affects only the coordinates in paths (e.g. to make them integer),
     it is cancelled out by a group transform.
     """
-    bitmaps = (Bitmap(file) for file in input_bitmap_files)
-    traced = LineDocument([tracing.trace_bitmap(bitmap) for bitmap in bitmaps])
-    traced = unify_identical_glyphs(traced)
+    print('tracing')
+    pages: list[LineDrawing] = []
+    for file in input_bitmap_files:
+        print(f'  {file}')
+        bitmap = Bitmap(file)
+        pages.append(tracing.trace_bitmap(bitmap))
+    traced = LineDocument(pages)
+    print('unifying glyphs')
+    traced = unify_identical_glyphs(traced, use_shared=True)
+    print('approximating')
     approximated = approximation.approximate_document(traced)
+    print('saving')
     
     save_as_svg(approximated, output_directory, scale)

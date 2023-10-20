@@ -18,9 +18,13 @@ class SvgDocument:
     All the coordinates are rounded to the specified number of `decimals`.
     """
     
-    def __init__(self, width: float, height: float, decimals: int=2):
+    def __init__(self, width: float=0, height: float=0, is_shared=False, decimals: int=2):
+        self.is_shared = is_shared
         self.decimals = decimals
-        self.svg = Element('svg', width=width, height=height, xmlns=_xmlns, xmlns__xlink=_xmlns_xlink)
+        if is_shared:
+            self.svg = Element('svg', xmlns=_xmlns)
+        else:
+            self.svg = Element('svg', width=width, height=height, xmlns=_xmlns, xmlns__x=_xmlns_x)
     
     
     def render(self) -> str:
@@ -58,11 +62,14 @@ class SvgDocument:
                 for contour in glyph.contours:
                     add_contour(path_data, contour, scale)
                 defs.add_child(Element('path',
-                    id=f'g{index}',
+                    id=f's{index}' if self.is_shared else f'r{index}',
                     d=path_data,
-                    fill=get_debug_color(index)  # for debugging purposes
+                    fill='gray' if self.is_shared else get_debug_color(index)  # for debugging purposes
                 ))
             self.svg.add_child(defs)
+        
+        if self.is_shared:
+            return
         
         group = Element('g', **attributes)
         for occurrence in drawing.glyph_occurrences:
@@ -73,8 +80,9 @@ class SvgDocument:
                         add_contour(path_data, contour.offset(occurrence.position), scale)
                     group.add_child(Element('path', d=path_data))
                 case GlyphReference():
+                    href = f'_.svg#s{occurrence.index}' if occurrence.is_shared else f'#r{occurrence.index}'
                     group.add_child(Element('use',
-                        xlink__href=f'#g{occurrence.index}',
+                        x__href=href,
                         x=self._format_value(occurrence.position[0]),
                         y=self._format_value(occurrence.position[1])
                     ))
@@ -119,4 +127,4 @@ class SvgDocument:
 _xml_declaration = '<?xml version="1.0" encoding="UTF-8"?>\n'
 
 _xmlns = "http://www.w3.org/2000/svg"
-_xmlns_xlink = "http://www.w3.org/1999/xlink"
+_xmlns_x = "http://www.w3.org/1999/xlink"

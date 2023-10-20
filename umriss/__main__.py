@@ -1,4 +1,5 @@
 from timeit import default_timer
+from os import listdir, path
 
 from . import trace
 from .tracing import BinarizedExact, BinarizedPolygon, GrayscalePolygon
@@ -8,11 +9,14 @@ from .approximation import Exact, DouglasPeuckerPolygon, SillyCubic
 if __name__ == '__main__':
     # TODO: add CLI
     
-    input_bitmap_files = [
-        'tmp/input_ku/173.tif',
-        'tmp/input_ku/174.tif',
-        'tmp/input_ku/175.tif',
-    ]
+    input_directory = 'tmp/input_ku'
+    input_bitmap_files = [path.join(input_directory, f) for f in sorted(listdir(input_directory))]
+    
+    # input_bitmap_files = [
+    #     'tmp/input_ku/173.tif',
+    #     'tmp/input_ku/174.tif',
+    #     'tmp/input_ku/175.tif',
+    # ]
     output_directory = 'tmp/out'
     tracing = BinarizedPolygon()
     approximation = Exact() # DouglasPeuckerPolygon(0.5)
